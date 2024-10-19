@@ -1,3 +1,15 @@
+DROP TABLE IF EXISTS Current_Patient;
+DROP TABLE IF EXISTS Feedback;
+DROP TABLE IF EXISTS Pharmacy;
+DROP TABLE IF EXISTS `Order`;
+DROP TABLE IF EXISTS BillContainsMedicine;
+DROP TABLE IF EXISTS Bill;
+DROP TABLE IF EXISTS Medicine;
+DROP TABLE IF EXISTS Patient;
+DROP TABLE IF EXISTS Doctor;
+DROP TABLE IF EXISTS Clinic;
+DROP TABLE IF EXISTS User;
+
 CREATE TABLE User (
     Email VARCHAR(255) PRIMARY KEY,
     Password VARCHAR(255),
@@ -6,7 +18,7 @@ CREATE TABLE User (
 
 CREATE TABLE Clinic (
     University_Name VARCHAR(255) UNIQUE,
-    Clinic_ID INTEGER PRIMARY KEY,
+    Clinic_ID INTEGER PRIMARY KEY AUTO_INCREMENT,
     Doctor_Availability BOOLEAN,
     Password VARCHAR(255)
 );
@@ -36,7 +48,7 @@ CREATE TABLE Patient (
 );
 
 CREATE TABLE Medicine (
-    Medicine_ID INTEGER PRIMARY KEY,
+    Medicine_ID INTEGER PRIMARY KEY AUTO_INCREMENT,
     Name VARCHAR(255),
     Category VARCHAR(255),
     Stock INTEGER,
@@ -45,7 +57,7 @@ CREATE TABLE Medicine (
 );
 
 CREATE TABLE Bill (
-    Bill_ID INTEGER PRIMARY KEY,
+    Bill_ID INTEGER PRIMARY KEY AUTO_INCREMENT,
     Price DECIMAL(10, 2),
     Quantity INTEGER
 );
@@ -75,7 +87,7 @@ CREATE TABLE Pharmacy (
 );
 
 CREATE TABLE Feedback (
-    Feedback_ID INTEGER PRIMARY KEY,
+    Feedback_ID INTEGER PRIMARY KEY AUTO_INCREMENT,
     Title VARCHAR(255),
     Description VARCHAR(255),
     Category VARCHAR(255),

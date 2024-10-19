@@ -7,13 +7,14 @@ const executeTransactionQuery = async (tables, lockType, queries = []) => {
     connection = await DBPool.getConnection();
     await connection.beginTransaction();
 
-    const lockQuery = `LOCK TABLES ${
-      Array.isArray(tables)
-        ? tables.map((table) => `${table} ${lockType}`).join(", ")
-        : `${tables} ${lockType}`
-    }`;
-    await connection.query(lockQuery);
-
+    if (tables != null && lockType!=null) {
+      const lockQuery = `LOCK TABLES ${
+        Array.isArray(tables)
+          ? tables.map((table) => `${table} ${lockType}`).join(", ")
+          : `${tables} ${lockType}`
+      }`;
+      await connection.query(lockQuery);
+    }
     let results = [];
     for (const queryObj of queries) {
       const { queryString, queryParams, type } = queryObj;
