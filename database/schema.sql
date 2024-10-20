@@ -50,8 +50,8 @@ CREATE TABLE Patient (
 CREATE TABLE Medicine (
     Medicine_ID INTEGER PRIMARY KEY AUTO_INCREMENT,
     Name VARCHAR(255),
+    Price FLOAT,
     Category VARCHAR(255),
-    Stock INTEGER,
     Type VARCHAR(255),
     Strength_and_Form VARCHAR(255)
 );
@@ -81,6 +81,7 @@ CREATE TABLE `Order` (
 CREATE TABLE Pharmacy (
     Medicine_ID INTEGER,
     Clinic_ID INTEGER,
+    Stock INTEGER,
     PRIMARY KEY (Medicine_ID, Clinic_ID),
     FOREIGN KEY (Medicine_ID) REFERENCES Medicine(Medicine_ID),
     FOREIGN KEY (Clinic_ID) REFERENCES Clinic(Clinic_ID)
