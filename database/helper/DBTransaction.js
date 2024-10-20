@@ -7,7 +7,7 @@ const executeTransactionQuery = async (tables, lockType, queries = []) => {
     connection = await DBPool.getConnection();
     await connection.beginTransaction();
 
-    if (tables != null && lockType!=null) {
+    if (tables != null && lockType != null) {
       const lockQuery = `LOCK TABLES ${
         Array.isArray(tables)
           ? tables.map((table) => `${table} ${lockType}`).join(", ")
@@ -15,16 +15,23 @@ const executeTransactionQuery = async (tables, lockType, queries = []) => {
       }`;
       await connection.query(lockQuery);
     }
+
     let results = [];
     for (const queryObj of queries) {
-      const { queryString, queryParams, type } = queryObj;
-      if (type === "Select") {
+      const { queryString, queryParams } = queryObj;
+      const isSelectQuery = queryString
+        .trim()
+        .toUpperCase()
+        .startsWith("SELECT");
+
+      if (isSelectQuery) {
         const [queryResult] = await connection.query(queryString, queryParams);
         results.push(queryResult);
-      } else if (type === "NoSelect") {
+      } else {
         await connection.query(queryString, queryParams);
       }
     }
+
     await connection.commit();
     logger.info({ message: `Transaction executed successfully` });
     await connection.query("UNLOCK TABLES");

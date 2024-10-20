@@ -1,4 +1,5 @@
 const validator = require("validator.js");
+const pharmacyModule = require("../modules/pharmacyModule.js");
 
 const pharmacyController = {
   // Get all products in a specific pharmacy
@@ -11,8 +12,8 @@ const pharmacyController = {
     }
 
     try {
-      const products = await pharmacyModule.getProductsInPharmacy(clinicID);
-      return res.status(200).send(products);
+      const response = await pharmacyModule.getProductsInPharmacy(clinicID);
+      return res.status(response.responseStatus).send(response.responseBody);
     } catch (err) {
       logger.error({
         message: "Error occurred in pharmacyController : getProductsInPharmacy",
@@ -32,8 +33,8 @@ const pharmacyController = {
     }
 
     try {
-      const product = await pharmacyModule.getProduct(productID);
-      return res.status(200).send(product);
+      const response = await pharmacyModule.getProduct(productID);
+      return res.status(response.responseStatus).send(response.responseBody);
     } catch (err) {
       logger.error({
         message: "Error occurred in pharmacyController : getProduct",
@@ -68,7 +69,7 @@ const pharmacyController = {
         strengthAndForm,
         price,
       });
-      return res.status(201).send(response);
+      return res.status(response.responseStatus).send(response.responseBody);
     } catch (err) {
       logger.error({
         message: "Error occurred in pharmacyController : addProduct",

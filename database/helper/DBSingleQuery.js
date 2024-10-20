@@ -6,7 +6,6 @@ const executeQuery = async (
   lockType,
   queryString,
   queryParams = [],
-  type
 ) => {
   let connection;
   try {
@@ -18,10 +17,13 @@ const executeQuery = async (
     }`;
 
     await connection.query(lockQuery);
+
+    const isSelectQuery = queryString.trim().toUpperCase().startsWith("SELECT");
+
     let results;
-    if (type == "Select") {
+    if (isSelectQuery) {
       [results] = await connection.query(queryString, queryParams);
-    } else if (type == "NoSelect") {
+    } else{
       await connection.query(queryString, queryParams);
     }
     logger.info({ message: `Successful execution of query ${queryString}` });

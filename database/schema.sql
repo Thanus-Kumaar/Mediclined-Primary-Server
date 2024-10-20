@@ -30,8 +30,8 @@ CREATE TABLE Doctor (
     Qualification VARCHAR(255),
     Age INTEGER,
     Clinic_ID INTEGER,
-    FOREIGN KEY (Email) REFERENCES User(Email),
-    FOREIGN KEY (Clinic_ID) REFERENCES Clinic(Clinic_ID)
+    FOREIGN KEY (Email) REFERENCES User(Email) ON DELETE CASCADE,
+    FOREIGN KEY (Clinic_ID) REFERENCES Clinic(Clinic_ID) ON DELETE CASCADE
 );
 
 CREATE TABLE Patient (
@@ -43,8 +43,8 @@ CREATE TABLE Patient (
     Clinic_ID INTEGER,
     Roll_number VARCHAR(255) UNIQUE,
     Address VARCHAR(255),
-    FOREIGN KEY (Email) REFERENCES User(Email),
-    FOREIGN KEY (Clinic_ID) REFERENCES Clinic(Clinic_ID)
+    FOREIGN KEY (Email) REFERENCES User(Email) ON DELETE CASCADE,
+    FOREIGN KEY (Clinic_ID) REFERENCES Clinic(Clinic_ID) ON DELETE SET NULL
 );
 
 CREATE TABLE Medicine (
@@ -63,8 +63,8 @@ CREATE TABLE Bill (
     Price DECIMAL(10, 2),
     Quantity INTEGER,
     Creation_date DATE,
-    FOREIGN KEY (Clinic_ID) REFERENCES Clinic(Clinic_ID),
-    FOREIGN KEY (Patient_Email) REFERENCES Patient(Email)
+    FOREIGN KEY (Clinic_ID) REFERENCES Clinic(Clinic_ID) ON DELETE CASCADE,
+    FOREIGN KEY (Patient_Email) REFERENCES Patient(Email) ON DELETE CASCADE
 );
 
 CREATE TABLE BillContainsMedicine (
@@ -72,8 +72,8 @@ CREATE TABLE BillContainsMedicine (
     Medicine_ID INTEGER,
     Quantity INTEGER,
     PRIMARY KEY (Bill_ID, Medicine_ID),
-    FOREIGN KEY (Bill_ID) REFERENCES Bill(Bill_ID),
-    FOREIGN KEY (Medicine_ID) REFERENCES Medicine(Medicine_ID)
+    FOREIGN KEY (Bill_ID) REFERENCES Bill(Bill_ID) ON DELETE CASCADE,
+    FOREIGN KEY (Medicine_ID) REFERENCES Medicine(Medicine_ID) ON DELETE CASCADE
 );
 
 CREATE TABLE `Order` (
@@ -81,7 +81,7 @@ CREATE TABLE `Order` (
     Bill_ID INTEGER PRIMARY KEY,
     OTP INTEGER,
     Completion_time DATETIME,
-    FOREIGN KEY (Bill_ID) REFERENCES Bill(Bill_ID)
+    FOREIGN KEY (Bill_ID) REFERENCES Bill(Bill_ID) ON DELETE CASCADE
 );
 
 CREATE TABLE Pharmacy (
@@ -89,8 +89,8 @@ CREATE TABLE Pharmacy (
     Clinic_ID INTEGER,
     Stock INTEGER,
     PRIMARY KEY (Medicine_ID, Clinic_ID),
-    FOREIGN KEY (Medicine_ID) REFERENCES Medicine(Medicine_ID),
-    FOREIGN KEY (Clinic_ID) REFERENCES Clinic(Clinic_ID)
+    FOREIGN KEY (Medicine_ID) REFERENCES Medicine(Medicine_ID) ON DELETE CASCADE,
+    FOREIGN KEY (Clinic_ID) REFERENCES Clinic(Clinic_ID) ON DELETE CASCADE
 );
 
 CREATE TABLE Feedback (
@@ -100,7 +100,7 @@ CREATE TABLE Feedback (
     Category VARCHAR(255),
     Creation_date DATE,
     Clinic_ID INTEGER,
-    FOREIGN KEY (Clinic_ID) REFERENCES Clinic(Clinic_ID)
+    FOREIGN KEY (Clinic_ID) REFERENCES Clinic(Clinic_ID) ON DELETE CASCADE
 );
 
 CREATE TABLE Current_Patient (
@@ -108,6 +108,6 @@ CREATE TABLE Current_Patient (
     Queue_No INTEGER,
     Clinic_ID INTEGER,
     PRIMARY KEY (Email, Clinic_ID),
-    FOREIGN KEY (Email) REFERENCES Patient(Email),
-    FOREIGN KEY (Clinic_ID) REFERENCES Clinic(Clinic_ID)
+    FOREIGN KEY (Email) REFERENCES Patient(Email) ON DELETE CASCADE,
+    FOREIGN KEY (Clinic_ID) REFERENCES Clinic(Clinic_ID) ON DELETE CASCADE
 );
