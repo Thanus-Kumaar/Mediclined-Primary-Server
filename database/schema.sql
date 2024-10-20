@@ -58,8 +58,13 @@ CREATE TABLE Medicine (
 
 CREATE TABLE Bill (
     Bill_ID INTEGER PRIMARY KEY AUTO_INCREMENT,
+    Clinic_ID INTEGER,
+    Patient_Email VARCHAR(255),
     Price DECIMAL(10, 2),
-    Quantity INTEGER
+    Quantity INTEGER,
+    Creation_date DATE,
+    FOREIGN KEY (Clinic_ID) REFERENCES Clinic(Clinic_ID),
+    FOREIGN KEY (Patient_Email) REFERENCES Patient(Email)
 );
 
 CREATE TABLE BillContainsMedicine (
@@ -75,6 +80,7 @@ CREATE TABLE `Order` (
     Status VARCHAR(255),
     Bill_ID INTEGER PRIMARY KEY,
     OTP INTEGER,
+    Completion_time DATETIME,
     FOREIGN KEY (Bill_ID) REFERENCES Bill(Bill_ID)
 );
 
