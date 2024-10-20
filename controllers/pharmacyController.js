@@ -102,7 +102,7 @@ const pharmacyController = {
         clinicID,
         stock,
       });
-      return res.status(201).send(response);
+      return res.status(response.responseStatus).send(response.responseBody);
     } catch (err) {
       logger.error({
         message:
@@ -130,7 +130,7 @@ const pharmacyController = {
         type,
         strengthAndForm,
       });
-      return res.status(200).send(response);
+      return res.status(response.responseStatus).send(response.responseBody);
     } catch (err) {
       logger.error({
         message: "Error occurred in pharmacyController : editProduct",
@@ -163,7 +163,7 @@ const pharmacyController = {
         clinicID,
         stock
       );
-      return res.status(200).send(response);
+      return res.status(response.responseStatus).send(response.responseBody);
     } catch (err) {
       logger.error({
         message: "Error occurred in pharmacyController : updateStock",
@@ -194,7 +194,7 @@ const pharmacyController = {
         productID,
         clinicID
       );
-      return res.status(200).send(response);
+      return res.status(response.responseStatus).send(response.responseBody);
     } catch (err) {
       logger.error({
         message:
@@ -216,7 +216,7 @@ const pharmacyController = {
 
     try {
       const response = await pharmacyModule.deleteProduct(productID);
-      return res.status(200).send(response);
+      return res.status(response.responseStatus).send(response.responseBody);
     } catch (err) {
       logger.error({
         message: "Error occurred in pharmacyController : deleteProduct",
