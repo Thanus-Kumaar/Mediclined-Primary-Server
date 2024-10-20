@@ -11,9 +11,11 @@ app.use(helmet());
 app.use(express.json());
 
 // Other import statements of database and routes
-const DBPool = require('./database/DBPool.js');
-const initSchema = require('./database/initSchema.js');
+const DBPool = require("./database/DBPool.js");
+const initSchema = require("./database/initSchema.js");
 initSchema(DBPool);
+const mainRouter = require("./routes/mainRoute.js");
+app.use("/api", mainRouter);
 
 // Testing the Server
 app.get("/api/test", (req, res) => {
@@ -24,8 +26,6 @@ app.listen(process.env.PORT, (err) => {
   if (err) {
     console.log(`[ERROR]: Error in Starting Server !!`, err);
   } else {
-    console.log(
-      `[LOG]: Server Listening in Port ${process.env.PORT}`
-    );
+    console.log(`[LOG]: Server Listening in Port ${process.env.PORT}`);
   }
 });
