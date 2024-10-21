@@ -1,57 +1,26 @@
 const validator = require("validator.js");
+const studentModule = require("../modules/studentModule");
 
 const studentController = {
-  // Add students (Admin-only)
+  // Add students for a particular clinic (Admin-only)
   addStudents: async (req, res) => {
-    const { email, role } = req.body;
-
-    if (!validator.isEmail(email) || role !== "STUDENT") {
-      return res.status(400).send({ ERR: "Invalid email or role" });
+    const { emails, clinicID } = req.body;
+    if (!emails || emails.length === 0) {
+      return res.status(400).json({
+        message: "Emails cannot be empty!",
+      });
     }
-
+    const invalidEmails = emails.filter((email) => !validator.isEmail(email));
+    if (invalidEmails.length > 0) {
+      return res.status(400).json({
+        message: `Invalid email(s): ${invalidEmails.join(", ")}`,
+      });
+    }
     try {
-      // Generate random password
-      const password = crypto.randomBytes(8).toString("hex");
-      const hashedPassword = await bcrypt.hash(password, 10);
-
-      // Add user to the database
-      await userModule.createUser({ email, password: hashedPassword, role });
-
-      // Send email to student
-      const emailStatus = await mailService.sendEmail(
-        email,
-        "Welcome!",
-        `Your password is: ${password}`
-      );
-
-      // If email sending fails, rollback the user entry
-      if (!emailStatus) {
-        await userModule.deleteUser(email);
-        return res
-          .status(500)
-          .send({ ERR: "Failed to send email, student not added" });
-      }
-
-      res.status(200).send({ message: "Student added successfully" });
+      const response = await studentModule.addStudents(emails, clinicID);
+      return res.status(response.responseStatus).send(response.responseBody);
     } catch (error) {
       return res.status(500).send({ ERR: "Error adding student" });
-    }
-  },
-
-  // Delete a single student (Admin-only)
-  deleteStudent: async (req, res) => {
-    const { email } = req.body;
-
-    if (!validator.isEmail(email)) {
-      return res.status(400).send({ ERR: "Invalid email" });
-    }
-
-    try {
-      await userModule.deleteUser(email);
-      await studentModule.deleteStudent(email);
-      return res.status(200).send({ message: "Student deleted successfully" });
-    } catch (err) {
-      return res.status(500).send({ ERR: "Error deleting student" });
     }
   },
 
@@ -64,11 +33,8 @@ const studentController = {
     }
 
     try {
-      for (const email of emails) {
-        await userModule.deleteUser(email);
-        await studentModule.deleteStudent(email);
-      }
-      return res.status(200).send({ message: "Students deleted successfully" });
+      const response = await studentModule.deleteStudents(emails);
+      return res.status(response.responseStatus).send(response.responseBody);
     } catch (err) {
       return res.status(500).send({ ERR: "Error deleting students" });
     }
@@ -77,8 +43,8 @@ const studentController = {
   // Get all students (Admin-only)
   getAllStudents: async (req, res) => {
     try {
-      const students = await studentModule.getAllStudents();
-      return res.status(200).send(students);
+      const response = await studentModule.getAllStudents();
+      return res.status(response.responseStatus).send(response.responseBody);
     } catch (err) {
       return res.status(500).send({ ERR: "Error retrieving students" });
     }
@@ -86,24 +52,18 @@ const studentController = {
 
   // Update student's own password
   updateStudentPassword: async (req, res) => {
-    const { email, oldPassword, newPassword } = req.body;
+    const { email, newPassword } = req.body;
 
     if (!validator.isEmail(email) || !newPassword || newPassword.length < 6) {
       return res.status(400).send({ ERR: "Invalid email or password" });
     }
 
     try {
-      const user = await userModule.getUserByEmail(email);
-      const isMatch = await bcrypt.compare(oldPassword, user.password);
-
-      if (!isMatch) {
-        return res.status(400).send({ ERR: "Incorrect old password" });
-      }
-
-      const hashedPassword = await bcrypt.hash(newPassword, 10);
-      await userModule.updatePassword(email, hashedPassword);
-
-      return res.status(200).send({ message: "Password updated successfully" });
+      const response = await userModule.updateStudentPassword(
+        email,
+        newPassword
+      );
+      return res.status(response.responseStatus).send(response.responseBody);
     } catch (err) {
       return res.status(500).send({ ERR: "Error updating password" });
     }
@@ -118,25 +78,8 @@ const studentController = {
     }
 
     try {
-      // Generate random password
-      const password = crypto.randomBytes(8).toString("hex");
-      const hashedPassword = await bcrypt.hash(password, 10);
-
-      // Update password in the database
-      await userModule.updatePassword(email, hashedPassword);
-
-      // Send email with new password
-      const emailStatus = await mailService.sendEmail(
-        email,
-        "Password Reset",
-        `Your new password is: ${password}`
-      );
-
-      if (!emailStatus) {
-        return res.status(500).send({ ERR: "Failed to send email" });
-      }
-
-      return res.status(200).send({ message: "Password reset successfully" });
+      const response = await userModule.resetStudentPassword(email);
+      return res.status(response.responseStatus).send(response.responseBody);
     } catch (err) {
       return res.status(500).send({ ERR: "Error resetting password" });
     }
@@ -151,8 +94,8 @@ const studentController = {
     }
 
     try {
-      const studentDetails = await studentModule.getStudentDetails(email);
-      return res.status(200).send(studentDetails);
+      const response = await studentModule.studentDetails(email);
+      return res.status(response.responseStatus).send(response.responseBody);
     } catch (err) {
       return res.status(500).send({ ERR: "Error retrieving student details" });
     }
@@ -167,13 +110,14 @@ const studentController = {
     }
 
     try {
-      await studentModule.updateStudentDetails(email, {
+      const response = await studentModule.editStudentDetails(
+        email,
         name,
         age,
         gender,
-        bloodGroup,
-      });
-      return res.status(200).send({ message: "Details updated successfully" });
+        bloodGroup
+      );
+      return res.status(response.responseStatus).send(response.responseBody);
     } catch (err) {
       return res.status(500).send({ ERR: "Error updating student details" });
     }
@@ -188,10 +132,8 @@ const studentController = {
     }
 
     try {
-      await studentModule.updateAddress(email, address);
-      return res
-        .status(200)
-        .send({ message: "Address added/updated successfully" });
+      const response = await studentModule.addAddress(email, address);
+      return res.status(response.responseStatus).send(response.responseBody);
     } catch (err) {
       return res.status(500).send({ ERR: "Error adding address" });
     }
@@ -206,8 +148,8 @@ const studentController = {
     }
 
     try {
-      await studentModule.removeAddress(email);
-      return res.status(200).send({ message: "Address removed successfully" });
+      const response = await studentModule.removeAddress(email);
+      return res.status(response.responseStatus).send(response.responseBody);
     } catch (err) {
       return res.status(500).send({ ERR: "Error removing address" });
     }

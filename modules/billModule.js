@@ -6,7 +6,6 @@ const DBSingleQuery = require("../database/helper/DBSingleQuery.js");
 const DBTransactionQuery = require("../database/helper/DBTransaction.js");
 
 const bcrypt = require("bcrypt");
-const { checkOTP } = require("../controllers/billController.js");
 const saltRounds = 10;
 
 const billModule = {
