@@ -79,7 +79,7 @@ CREATE TABLE BillContainsMedicine (
 CREATE TABLE `Order` (
     Status VARCHAR(255),
     Bill_ID INTEGER PRIMARY KEY,
-    OTP INTEGER,
+    OTP VARCHAR(60),
     Completion_time DATETIME,
     FOREIGN KEY (Bill_ID) REFERENCES Bill(Bill_ID) ON DELETE CASCADE
 );

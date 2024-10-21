@@ -5,11 +5,15 @@ const {
 const DBSingleQuery = require("../database/helper/DBSingleQuery.js");
 const DBTransactionQuery = require("../database/helper/DBTransaction.js");
 
+const bcrypt = require("bcrypt");
+const { checkOTP } = require("../controllers/billController.js");
+const saltRounds = 10;
+
 const billModule = {
   getBillForStudent: async function (email) {
     try {
       const bills = await DBSingleQuery(
-        ["Bill"],  
+        ["Bill"],
         "READ",
         `SELECT Bill_ID, Creation_date, Price, Quantity
          FROM Bill
@@ -19,16 +23,18 @@ const billModule = {
       if (bills != "FAILURE") {
         return setResponseAsOk(bills);
       } else {
-        return setResponseAsError("Failed to retrive the bill for the given email!");
+        return setResponseAsError(
+          "Failed to retrive the bill for the given email!"
+        );
       }
     } catch (err) {
       return setResponseAsError("Error in getBillForStudent: " + err.message);
     }
   },
-  getBill: async function(billID) {
+  getBill: async function (billID) {
     try {
       const bill = await DBSingleQuery(
-        ["Bill", "\`Order\`", "BillContainsMedicine", "Medicine"],
+        ["Bill", "`Order`", "BillContainsMedicine", "Medicine"],
         "READ",
         `SELECT b.Bill_ID, b.Creation_date, b.Price, b.Quantity, 
                 o.Status, o.OTP, o.Completion_time, 
@@ -50,7 +56,7 @@ const billModule = {
       return setResponseAsError("Error in getBill: " + err.message);
     }
   },
-  getBillsForPharmacy: async function(clinicID) {
+  getBillsForPharmacy: async function (clinicID) {
     try {
       const bills = await DBSingleQuery(
         "Bill",
@@ -64,30 +70,39 @@ const billModule = {
       if (bills != "FAILURE") {
         return setResponseAsOk(bills);
       } else {
-        return setResponseAsError("Failed to retrieve bills for the pharmacy/clinic!");
+        return setResponseAsError(
+          "Failed to retrieve bills for the pharmacy/clinic!"
+        );
       }
     } catch (err) {
       return setResponseAsError("Error in getBillsForPharmacy: " + err.message);
     }
   },
-  createBill: async function(clinicID, price, quantity, medicines) {
+  createBill: async function (clinicID, price, quantity, medicines) {
+    const otp = Math.floor(1000 + Math.random() * 9000).toString();
+    const hashedOTP = await bcrypt.hash(otp, saltRounds);
+
     const queries = [
       {
         queryString: `INSERT INTO Bill (Clinic_ID, Price, Quantity, Creation_date) VALUES (?, ?, ?, NOW())`,
         queryParams: [clinicID, price, quantity],
       },
-      ...medicines.map(medicine => ({
+      ...medicines.map((medicine) => ({
         queryString: `INSERT INTO BillContainsMedicine (Bill_ID, Medicine_ID, Quantity) VALUES (LAST_INSERT_ID(), ?, ?)`,
         queryParams: [medicine.medicineID, medicine.quantity],
       })),
       {
-        queryString: `INSERT INTO \`Order\` (Bill_ID, Status, OTP, Completion_time) VALUES (LAST_INSERT_ID(), 'PENDING', ?, NULL)`,
-        queryParams: [Math.floor(1000 + Math.random() * 9000)],
-      }
+        queryString: `INSERT INTO \`Order\` (Bill_ID, Status, Completion_time) VALUES (LAST_INSERT_ID(), 'PENDING', NULL)`,
+        queryParams: [],
+      },
     ];
 
     try {
-      const result = await DBTransactionQuery(["Bill", "BillContainsMedicine", "`Order`"], "WRITE", queries);
+      const result = await DBTransactionQuery(
+        ["Bill", "BillContainsMedicine", "`Order`"],
+        "WRITE",
+        queries
+      );
       return result === "SUCCESS"
         ? setResponseAsOk("Bill created successfully!")
         : setResponseAsError("Failed to create the bill!");
@@ -95,7 +110,7 @@ const billModule = {
       return setResponseAsError("Error in createBill: " + err.message);
     }
   },
-  deleteBill: async function(billID) {
+  deleteBill: async function (billID) {
     try {
       const order = await DBSingleQuery(
         "`Order`",
@@ -118,13 +133,15 @@ const billModule = {
           return setResponseAsError("Failed to delete the bill!");
         }
       } else {
-        return setResponseAsError("Bill cannot be deleted as the order OUT FOR DELIVERY.");
+        return setResponseAsError(
+          "Bill cannot be deleted as the order OUT FOR DELIVERY."
+        );
       }
     } catch (err) {
       return setResponseAsError("Error in deleteBill: " + err.message);
     }
   },
-  updateOrderStatus: async function({ billID, status }) {
+  updateOrderStatus: async function (billID, status) {
     try {
       const updateResult = await DBSingleQuery(
         "`Order`",
@@ -139,12 +156,52 @@ const billModule = {
         return setResponseAsError("Failed to update order status!");
       }
     } catch (err) {
-      return setResponseAsError(
-        "Error in updateOrderStatus: " + err.message
-      );
+      return setResponseAsError("Error in updateOrderStatus: " + err.message);
     }
   },
-  deleteBillAndOrder: async function(billID) {
+  sendOTP: async function (billID) {
+    try {
+      const otp = Math.floor(1000 + Math.random() * 9000).toString();
+      // send mail, if mail is not being sent, fail the process and return, else go for inserting it into the table.
+      const hashedOTP = await bcrypt.hash(otp, saltRounds);
+      const updated = await DBSingleQuery(
+        "`Order`",
+        "WRITE",
+        "UPDATE `Order` SET OTP = ? WHERE Bill_ID = ?",
+        [hashedOTP, billID]
+      );
+      if (updated != "FAILURE") {
+        return setResponseAsOk("OTP sent successfully!");
+      } else {
+        return setResponseAsError("Failed to send OTP!");
+      }
+    } catch (err) {
+      return setResponseAsError("Error in sendOTP: " + err.message);
+    }
+  },
+  checkOTP: async function (billID, otp) {
+    try {
+      const hashedOTP = await bcrypt.hash(otp, saltRounds);
+      const OTPentry = await DBSingleQuery(
+        "`Order`",
+        "READ",
+        "SELECT OTP FROM `Order` WHERE Bill_ID = ? AND OTP=?",
+        [billID, hashedOTP]
+      );
+      if (OTPentry != "FAILURE") {
+        if (OTPentry.length != 0) {
+          return setResponseAsOk("OTP verified successfully!");
+        } else {
+          return setResponseAsBasRequest("Invalid OTP!");
+        }
+      } else {
+        return setResponseAsError("Failed to verify OTP!");
+      }
+    } catch (err) {
+      return setResponseAsError("Error in checkOTP: " + err.message);
+    }
+  },
+  deleteBillAndOrder: async function (billID) {
     try {
       const queries = [
         {
@@ -154,10 +211,14 @@ const billModule = {
         {
           queryString: `DELETE FROM Bill WHERE Bill_ID = ?`,
           queryParams: [billID],
-        }
+        },
       ];
 
-      const result = await DBTransactionQuery(["\'Order\`","Bill"], "WRITE", queries);
+      const result = await DBTransactionQuery(
+        ["'Order`", "Bill"],
+        "WRITE",
+        queries
+      );
 
       if (result != "FAILURE") {
         return setResponseAsOk("Bill and order deleted successfully!");
@@ -165,11 +226,9 @@ const billModule = {
         return setResponseAsError("Failed to delete the bill and order!");
       }
     } catch (err) {
-      return setResponseAsError(
-        "Error in deleteBillAndOrder: " + err.message
-      );
+      return setResponseAsError("Error in deleteBillAndOrder: " + err.message);
     }
-  }
+  },
 };
 
 module.exports = billModule;

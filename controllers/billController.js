@@ -108,52 +108,41 @@ const billController = {
     }
   },
 
-  // // Send OTP for order verification
-  // sendOTP: async (req, res) => {
-  //   const { billID } = req.body;
+  // Send OTP for order verification
+  sendOTP: async (req, res) => {
+    const { billID } = req.body;
+    if (!billID || !validator.isInt(billID, { min: 1 })) {
+      return res.status(400).send({ ERR: "Invalid billID!" });
+    }
 
-  //   if (!billID || !validator.isInt(billID, { min: 1 })) {
-  //     return res.status(400).send({ ERR: "Invalid billID!" });
-  //   }
+    try {
+      const  response = await pharmacyModule.sendOTP(billID);
+      return res.status(response.responseStatus).send(response.responseBody); 
+    } catch (err) {
+      return res.status(500).send({ ERR: "Error sending OTP!" });
+    }
+  },
 
-  //   try {
-  //     const otp = otpService.generateOTP();
-  //     await pharmacyModule.updateOrderOTP(billID, otp);
+  // Check if the provided OTP is valid
+  checkOTP: async (req, res) => {
+    const { billID, otp } = req.body;
 
-  //     // Assume sendOTPViaEmail is a function to send the OTP
-  //     await otpService.sendOTPViaEmail(billID, otp);
+    if (
+      !billID ||
+      !otp ||
+      !validator.isInt(billID, { min: 1 }) ||
+      !validator.isInt(otp)
+    ) {
+      return res.status(400).send({ ERR: "Invalid billID or OTP!" });
+    }
 
-  //     return res.status(200).send({ message: "OTP sent successfully!" });
-  //   } catch (err) {
-  //     return res.status(500).send({ ERR: "Error sending OTP!" });
-  //   }
-  // },
-
-  // // Check if the provided OTP is valid
-  // checkOTP: async (req, res) => {
-  //   const { billID, otp } = req.body;
-
-  //   if (
-  //     !billID ||
-  //     !otp ||
-  //     !validator.isInt(billID, { min: 1 }) ||
-  //     !validator.isInt(otp)
-  //   ) {
-  //     return res.status(400).send({ ERR: "Invalid billID or OTP!" });
-  //   }
-
-  //   try {
-  //     const isValidOTP = await pharmacyModule.checkOTP(billID, otp);
-
-  //     if (!isValidOTP) {
-  //       return res.status(400).send({ ERR: "Invalid OTP!" });
-  //     }
-
-  //     return res.status(200).send({ message: "OTP verified successfully!" });
-  //   } catch (err) {
-  //     return res.status(500).send({ ERR: "Error verifying OTP!" });
-  //   }
-  // },
+    try {
+      const response = await pharmacyModule.checkOTP(billID, otp);
+      return res.status(response.responseStatus).send(response.responseBody);
+    } catch (err) {
+      return res.status(500).send({ ERR: "Error verifying OTP!" });
+    }
+  },
 
   // Delete bill and order after completion
   deleteBillAndOrder: async (req, res) => {

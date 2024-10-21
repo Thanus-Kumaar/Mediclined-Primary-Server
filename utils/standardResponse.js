@@ -8,6 +8,12 @@ function setResponseAsError(err) {
   return response;
 }
 
+function setResponseAsBasRequest(message){
+  response.responseStatus = 400;
+  response.responseBody = { BAD_REQUEST: message };
+  return response;
+}
+
 function setResponseAsOk(message) {
   response.responseStatus = 200;
   response.responseBody = { MSG: message };
@@ -17,4 +23,5 @@ function setResponseAsOk(message) {
 module.exports = {
   setResponseAsError,
   setResponseAsOk,
+  setResponseAsBasRequest
 };
