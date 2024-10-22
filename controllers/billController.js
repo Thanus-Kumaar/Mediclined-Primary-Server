@@ -3,7 +3,7 @@ const validator = require("validator.js");
 const billController = {
   // Get individual bill for a specific bill
   getBill: async (req, res) => {
-    const { billID } = req.query;
+    const { billID } = req.params;
 
     if (!billID || !validator.isInt(billID)) {
       return res.status(400).send({ ERR: "Invalid billID!" });
@@ -35,7 +35,7 @@ const billController = {
 
   // Get all bills related to a specific pharmacy/clinic
   getBillsForPharmacy: async (req, res) => {
-    const { clinicID } = req.query;
+    const { clinicID } = req.params;
 
     if (!clinicID || !validator.isInt(clinicID, { min: 1 })) {
       return res.status(400).send({ ERR: "Invalid clinicID!" });
@@ -73,7 +73,7 @@ const billController = {
 
   // Delete a bill only if order status is not "OUT"
   deleteBill: async (req, res) => {
-    const { billID } = req.body;
+    const { billID } = req.params;
 
     if (!billID || !validator.isInt(billID, { min: 1 })) {
       return res.status(400).send({ ERR: "Invalid billID!" });
@@ -146,7 +146,7 @@ const billController = {
 
   // Delete bill and order after completion
   deleteBillAndOrder: async (req, res) => {
-    const { billID } = req.body;
+    const { billID } = req.params;
 
     if (!billID || !validator.isInt(billID, { min: 1 })) {
       return res.status(400).send({ ERR: "Invalid billID!" });

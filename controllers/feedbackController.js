@@ -3,7 +3,7 @@ const feedbackModule = require("../modules/feedbackModule.js");
 
 const feedbackController = {
   getFeedback: async (req, res) => {
-    const { clinicID } = req.query;
+    const { clinicID } = req.params;
     if (!clinicID || !validator.isInt(clinicID)) {
       return res.status(400).send({ BAD_REQUEST: "Invalid clinic ID" });
     }

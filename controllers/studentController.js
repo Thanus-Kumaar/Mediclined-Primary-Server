@@ -125,7 +125,8 @@ const studentController = {
 
   // Add student address
   addAddress: async (req, res) => {
-    const { email, address } = req.body;
+    const { address } = req.body;
+    const { email } = req.params;
 
     if (!validator.isEmail(email)) {
       return res.status(400).send({ ERR: "Invalid email" });
@@ -141,7 +142,7 @@ const studentController = {
 
   // Remove student address
   removeAddress: async (req, res) => {
-    const { email } = req.body;
+    const { email } = req.params;
 
     if (!validator.isEmail(email)) {
       return res.status(400).send({ ERR: "Invalid email" });

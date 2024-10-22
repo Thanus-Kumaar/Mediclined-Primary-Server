@@ -1,19 +1,22 @@
 const express = require("express");
+const studentController = require("../controllers/studentController.js");
 
 const router = express.Router();
 
 // only for admins
-router.post("/addStudents") // should accept email, role (STUDENT), generate a random password and send a mail to student along with entry in database. if any of the two process fail, revert that student.
-router.delete("/deleteStudent") // accept email
-router.delete("/deleteStudents") // many emails
-router.get("/getAllStudents"); // Admin route to get all students.
-router.put("/updateStudentPassword"); // Students can update their own password.
-router.put("/resetStudentPassword"); // Admin can reset a student's password and send via email.
+router
+  .route("/students")
+  .get(studentController.getAllStudents)
+  .post(studentController.addStudents)
+  .delete(studentController.deleteStudents);
+
+router.put("/student/password", studentController.updateStudentPassword);
+router.put("/student/resetPassword", studentController.resetStudentPassword); // Admin can reset a student's password and send via email.
 
 // for students dashboard
-router.get("/getStudentDetails")
-router.put("/editStudentDetails")
-router.put("/addAddress")
-router.delete("/removeAddress") // there can be only one address for a student
+router.get("/student", studentController.studentDetails);
+router.put("/student", studentController.editStudentDetails);
+router.put("/student/:email/address", studentController.addAddress);
+router.delete("/student/:email/address", studentController.removeAddress); 
 
 module.exports = router;

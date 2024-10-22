@@ -25,7 +25,7 @@ const pharmacyController = {
 
   // Get a specific product by ID
   getProduct: async (req, res) => {
-    const { productID } = req.query;
+    const { productID } = req.params;
 
     // Validate productID
     if (!productID || !validator.isInt(productID)) {
@@ -175,7 +175,7 @@ const pharmacyController = {
 
   // Delete a product from a pharmacy
   deleteProductInPharmacy: async (req, res) => {
-    const { productID, clinicID } = req.body;
+    const { productID, clinicID } = req.params;
 
     // Validate inputs
     if (
@@ -207,7 +207,7 @@ const pharmacyController = {
 
   // Delete a product entirely
   deleteProduct: async (req, res) => {
-    const { productID } = req.body;
+    const { productID } = req.params;
 
     // Validate productID
     if (!productID || !validator.isInt(productID.toString())) {
