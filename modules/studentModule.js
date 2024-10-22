@@ -196,6 +196,23 @@ const studentModule = {
       return setResponseAsError("Error in removeAddress: " + err.message);
     }
   },
+  studentDetailsByRollNo: async function (rollNo) {
+    try{
+      const details = await DBSingleQuery(
+        "Patient",
+        "READ",
+        "SELECT * FROM Patient WHERE Roll_number = ?",
+        [rollNo]
+      )
+      if (details != "FAILURE") {
+        return setResponseAsOk(details);
+      } else {
+        return setResponseAsError("Failed to fetch student!");
+      }
+    } catch (err) {
+      return setResponseAsError("Error in studentDetailsByRollNo: " + err.message);
+    }
+  }
 };
 
 module.exports = studentModule;

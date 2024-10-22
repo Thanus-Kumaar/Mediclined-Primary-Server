@@ -18,5 +18,6 @@ router.get("/", studentController.studentDetails);
 router.put("/", studentController.editStudentDetails);
 router.put("/:email/address", studentController.addAddress);
 router.delete("/:email/address", studentController.removeAddress); 
+router.get("/rollno", studentController.studentDetailsByRollNo);
 
 module.exports = router;

@@ -155,6 +155,18 @@ const studentController = {
       return res.status(500).send({ ERR: "Error removing address" });
     }
   },
+  studentDetailsByRollNo: async (req, res) => {
+    const { rollNo } = req.query;
+    if (!rollNo) {
+      return res.status(400).send({ ERR: "Roll number is missing!" });
+    }
+    try {
+      const response = await studentModule.studentDetailsByRollNo(rollNo);
+      return res.status(response.responseStatus).send(response.responseBody);
+    } catch (err) {
+      return res.status(500).send({ ERR: "Error in getting student details from roll number." });
+    }
+  },
 };
 
 module.exports = studentController;
