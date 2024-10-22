@@ -10,13 +10,13 @@ router
   .post(studentController.addStudents)
   .delete(studentController.deleteStudents);
 
-router.put("/student/password", studentController.updateStudentPassword);
-router.put("/student/resetPassword", studentController.resetStudentPassword); // Admin can reset a student's password and send via email.
+router.put("/password", studentController.updateStudentPassword);
+router.put("/resetPassword", studentController.resetStudentPassword); // Admin can reset a student's password and send via email.
 
 // for students dashboard
-router.get("/student", studentController.studentDetails);
-router.put("/student", studentController.editStudentDetails);
-router.put("/student/:email/address", studentController.addAddress);
-router.delete("/student/:email/address", studentController.removeAddress); 
+router.get("/", studentController.studentDetails);
+router.put("/", studentController.editStudentDetails);
+router.put("/:email/address", studentController.addAddress);
+router.delete("/:email/address", studentController.removeAddress); 
 
 module.exports = router;

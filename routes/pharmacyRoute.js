@@ -4,16 +4,16 @@ const pharmacyController = require("../controllers/pharmacyController.js");
 
 const router = express.Router();
 
-router.get("/pharmacy/products", pharmacyController.getProductsInPharmacy);
+router.get("/products", pharmacyController.getProductsInPharmacy);
 router.get("/product/:productID", pharmacyController.getProduct);
-router.post("/product", pharmacyController.addProduct);
-router.post("/pharmacy/product", pharmacyController.addProductToPharmacyWithStock);
-router.put("/product", pharmacyController.editProduct);
+router.post("/Addproduct", pharmacyController.addProduct);
+router.post("/product", pharmacyController.addProductToPharmacyWithStock);
+router.put("/Editproduct", pharmacyController.editProduct);
 router.put("/product/stock", pharmacyController.updateStock);
 router.delete(
-  "/pharmacy/:clinicID/product/:productID",
+  "/:clinicID/product/:productID",
   pharmacyController.deleteProductInPharmacy
 );
-router.delete("/product/:productID", pharmacyController.deleteProduct);
+router.delete("/deleteProduct/:productID", pharmacyController.deleteProduct);
 
 module.exports = router;
