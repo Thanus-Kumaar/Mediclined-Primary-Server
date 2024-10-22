@@ -225,6 +225,58 @@ const pharmacyController = {
       return res.status(500).send({ ERR: "Internal Server Error" });
     }
   },
+  getStudentsQueue: async (req, res) => {
+    const { clinicID } = req.query;
+    if (!clinicID || !validator.isInt(clinicID)) {
+      return res.status(400).send({ ERR: "Invalid or missing clinicID" });
+    }
+    try {
+      const response = await pharmacyModule.getStudentsQueue(clinicID);
+      return res.status(response.responseStatus).send(response.responseBody);
+    } catch (err) {
+      return res.status(500).send({ ERR: "Internal Server Error" });
+    }
+  },
+  addStudentToQueue: async (req, res) => {
+    const { clinicID, email, queueNo } = req.body;
+    if (
+      !clinicID ||
+      !email ||
+      !queueNo ||
+      !validator.isInt(clinicID) ||
+      !validator.isInt(queueNo) ||
+      !validator.isEmail(email)
+    ) {
+      return res.status(400).send({ ERR: "Invalid or missing credentials" });
+    }
+    try {
+      const response = await pharmacyModule.addStudentToQueue(
+        clinicID,
+        email,
+        queueNo
+      );
+      return res.status(response.responseStatus).send(response.responseBody);
+    } catch (err) {
+      return res.status(500).send({ ERR: "Internal Server Error" });
+    }
+  },
+  removeStudentFromQueue: async (req, res) => {
+    const { clinicID, email } = req.query;
+    if (
+      !clinicID ||
+      !email ||
+      !validator.isEmail(email) ||
+      !validator.isInt(clinicID)
+    ) {
+      return res.status(400).send({ ERR: "Invalid or missing clinicID or email" });
+    }
+    try {
+      const response = await pharmacyModule.removeStudentFromQueue(clinicID, email);
+      return res.status(response.responseStatus).send(response.responseBody);
+    } catch (err) {
+      return res.status(500).send({ ERR: "Internal Server Error" });
+    }
+  },
 };
 
 module.exports = pharmacyController;

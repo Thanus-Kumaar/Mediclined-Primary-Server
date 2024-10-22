@@ -161,6 +161,59 @@ const pharmacyModule = {
       return setResponseAsError("Error in deleteProduct: " + err.message);
     }
   },
+  getStudentsQueue: async function (clinicID) {
+    try {
+      const queue = await DBSingleQuery(
+        "Current_Patient",
+        "READ",
+        "SELECT * FROM Current_Patient WHERE Clinic_ID = ?",
+        [clinicID]
+      );
+      if (queue !== "FAILURE") {
+        return setResponseAsOk(queue);
+      } else {
+        return setResponseAsError("Failed to fetch queue!");
+      }
+    } catch (err) {
+      return setResponseAsError("Error in getStudentsQueue: " + err.message);
+    }
+  },
+  addStudentToQueue: async function (clinicID, email, queueNo) {
+    try {
+      const queue = await DBSingleQuery(
+        "Current_Patient",
+        "WRITE",
+        "INSERT INTO Current_Patient (Clinic_ID, Email, Queue_No) VALUES (?,?,?)",
+        [clinicID, email, queueNo]
+      );
+      if (queue !== "FAILURE") {
+        return setResponseAsOk("Student added to queue");
+      } else {
+        return setResponseAsError("Failed to add into queue!");
+      }
+    } catch (err) {
+      return setResponseAsError("Error in addStudentToQueue: " + err.message);
+    }
+  },
+  removeStudentFromQueue: async function (clinicID, email) {
+    try {
+      const queue = await DBSingleQuery(
+        "Current_Patient",
+        "WRITE",
+        "DELETE FROM Current_Patient WHERE Email = ? AND Clinic_ID = ?",
+        [email, clinicID]
+      );
+      if (queue !== "FAILURE") {
+        return setResponseAsOk("Student deleted from queue successfully");
+      } else {
+        return setResponseAsError("Failed to remove from queue!");
+      }
+    } catch (err) {
+      return setResponseAsError(
+        "Error in removeStudentFromQueue: " + err.message
+      );
+    }
+  },
 };
 
 module.exports = pharmacyModule;

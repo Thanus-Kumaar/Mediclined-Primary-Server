@@ -15,5 +15,10 @@ router.delete(
   pharmacyController.deleteProductInPharmacy
 );
 router.delete("/deleteProduct/:productID", pharmacyController.deleteProduct);
+router
+  .route("/queue")
+  .get(pharmacyController.getStudentsQueue)
+  .post(pharmacyController.addStudentToQueue)
+  .delete(pharmacyController.removeStudentFromQueue)
 
 module.exports = router;
