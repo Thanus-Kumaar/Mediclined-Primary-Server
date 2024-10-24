@@ -5,6 +5,8 @@ const {
 const DBSingleQuery = require("../database/helper/DBSingleQuery.js");
 const DBTransactionQuery = require("../database/helper/DBTransaction.js");
 
+const bcrypt = require("bcrypt")
+
 const doctorModule = {
   getDoctorDetails: async function (email) {
     try {
@@ -51,13 +53,14 @@ const doctorModule = {
     clinicID
   ) {
     try {
+      const hashedPassword = await bcrypt.hash(password, 10);
       const transaction = await DBTransactionQuery(
         ["User", "Doctor"],
         "WRITE",
         [
           {
             queryString: "INSERT INTO User VALUES (?,?,'D')",
-            queryParams: [email, password],
+            queryParams: [email, hashedPassword],
           },
           {
             queryString:

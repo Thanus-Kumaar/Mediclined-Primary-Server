@@ -4,6 +4,8 @@ const {
 } = require("../utils/standardResponse.js");
 const DBSingleQuery = require("../database/helper/DBSingleQuery.js");
 
+const bcrypt = require("bcrypt");
+
 const clinicModule = {
   getClinics: async function () {
     try {
@@ -44,11 +46,12 @@ const clinicModule = {
     password
   ) {
     try {
+      const hashedPassword = await bcrypt.hash(password, 10);
       const created = await DBSingleQuery(
         "Clinic",
         "WRITE",
         "INSERT INTO Clinic (University_Name, Doctor_Availability, Password) VALUES (?,?,?)",
-        [university_name, doctor_availability, password]
+        [university_name, doctor_availability, hashedPassword]
       );
       if (created != "FAILURE") {
         return setResponseAsOk("Clinic created successfully!");
