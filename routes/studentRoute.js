@@ -3,21 +3,43 @@ const studentController = require("../controllers/studentController.js");
 
 const router = express.Router();
 
+const { authorizeRole } = require("../middlewares/webTokenValidator.js");
+
 // only for admins
 router
-  .route("/students")
+  .route("/students", authorizeRole(["A"]))
   .get(studentController.getAllStudents)
   .post(studentController.addStudents)
   .delete(studentController.deleteStudents);
 
-router.put("/password", studentController.updateStudentPassword);
-router.put("/resetPassword", studentController.resetStudentPassword); // Admin can reset a student's password and send via email.
+router.put(
+  "/password",
+  authorizeRole(["A"]),
+  studentController.updateStudentPassword
+);
+router.put(
+  "/resetPassword",
+  authorizeRole(["A"]),
+  studentController.resetStudentPassword
+); // Admin can reset a student's password and send via email.
 
 // for students dashboard
-router.get("/", studentController.studentDetails);
-router.put("/", studentController.editStudentDetails);
-router.put("/:email/address", studentController.addAddress);
-router.delete("/:email/address", studentController.removeAddress); 
-router.get("/rollno", studentController.studentDetailsByRollNo);
+router.get("/", authorizeRole(["S"]), studentController.studentDetails);
+router.put("/", authorizeRole(["S"]), studentController.editStudentDetails);
+router.put(
+  "/:email/address",
+  authorizeRole(["S"]),
+  studentController.addAddress
+);
+router.delete(
+  "/:email/address",
+  authorizeRole(["S"]),
+  studentController.removeAddress
+);
+router.get(
+  "/rollno",
+  authorizeRole(["S", "C"]),
+  studentController.studentDetailsByRollNo
+);
 
 module.exports = router;

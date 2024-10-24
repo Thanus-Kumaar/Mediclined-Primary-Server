@@ -7,6 +7,7 @@ const studentRoute = require("./studentRoute.js");
 const feedbackRoute = require("./feedbackRoute.js");
 const clinicRoute = require("./clinicRoute.js");
 const doctorRoute = require("./doctorRoute.js");
+const authRoute = require("./authRoute.js");
 
 const router = express.Router();
 
@@ -16,5 +17,6 @@ router.use("/student", studentRoute);
 router.use("/feedback", feedbackRoute);
 router.use("/clinic", clinicRoute);
 router.use("/doctor", doctorRoute);
+router.use("/", authRoute);
 
 module.exports = router;
