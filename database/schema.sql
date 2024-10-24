@@ -16,6 +16,8 @@ CREATE TABLE User (
     Role CHAR(1)
 );
 
+INSERT INTO User VALUES("thanuskumaara@gmail.com","$2b$10$Nr7zW.NA2qCQEEBZ19vAzOf6146iPUZG9STwp9aUSLkpJs1fHMumi","A");
+
 CREATE TABLE Clinic (
     University_Name VARCHAR(255) UNIQUE,
     Clinic_ID INTEGER PRIMARY KEY AUTO_INCREMENT,

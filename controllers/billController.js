@@ -1,4 +1,4 @@
-const validator = require("validator.js");
+const validator = require("validator");
 
 const billController = {
   // Get individual bill for a specific bill
@@ -64,7 +64,12 @@ const billController = {
     }
 
     try {
-      const response = await pharmacyModule.createBill(clinicID, price, quantity, medicines);
+      const response = await pharmacyModule.createBill(
+        clinicID,
+        price,
+        quantity,
+        medicines
+      );
       return res.status(response.responseStatus).send(response.responseBody);
     } catch (err) {
       return res.status(500).send({ ERR: "Error creating bill!" });
@@ -116,8 +121,8 @@ const billController = {
     }
 
     try {
-      const  response = await pharmacyModule.sendOTP(billID);
-      return res.status(response.responseStatus).send(response.responseBody); 
+      const response = await pharmacyModule.sendOTP(billID);
+      return res.status(response.responseStatus).send(response.responseBody);
     } catch (err) {
       return res.status(500).send({ ERR: "Error sending OTP!" });
     }

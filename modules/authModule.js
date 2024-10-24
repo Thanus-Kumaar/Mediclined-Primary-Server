@@ -6,6 +6,7 @@ const {
 const DBSingleQuery = require("../database/helper/DBSingleQuery.js");
 
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt")
 
 const authModule = {
   login: async function (email, password) {

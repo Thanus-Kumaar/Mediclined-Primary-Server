@@ -1,4 +1,4 @@
-const validator = require("validator.js");
+const validator = require("validator");
 const studentModule = require("../modules/studentModule");
 
 const studentController = {
@@ -164,7 +164,9 @@ const studentController = {
       const response = await studentModule.studentDetailsByRollNo(rollNo);
       return res.status(response.responseStatus).send(response.responseBody);
     } catch (err) {
-      return res.status(500).send({ ERR: "Error in getting student details from roll number." });
+      return res
+        .status(500)
+        .send({ ERR: "Error in getting student details from roll number." });
     }
   },
 };

@@ -1,4 +1,4 @@
-const validator = require("validator.js");
+const validator = require("validator");
 const feedbackModule = require("../modules/feedbackModule.js");
 
 const feedbackController = {
@@ -26,7 +26,12 @@ const feedbackController = {
       return res.status(400).send({ BAD_REQUEST: "Invalid credentials" });
     }
     try {
-      const response = await feedbackModule.sendFeedback(clinicID, title, description, category);
+      const response = await feedbackModule.sendFeedback(
+        clinicID,
+        title,
+        description,
+        category
+      );
       return res.status(response.responseStatus).send(response.responseBody);
     } catch (err) {
       return res.status(500).send({ ERR: "Error in sending feedback" });

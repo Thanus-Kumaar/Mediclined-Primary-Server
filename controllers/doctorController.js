@@ -1,4 +1,4 @@
-const validator = require("validator.js");
+const validator = require("validator");
 const doctorModule = require("../modules/doctorModule.js");
 
 const doctorController = {

@@ -1,4 +1,4 @@
-const validator = require("validator.js");
+const validator = require("validator");
 const pharmacyModule = require("../modules/pharmacyModule.js");
 
 const pharmacyController = {
@@ -268,10 +268,15 @@ const pharmacyController = {
       !validator.isEmail(email) ||
       !validator.isInt(clinicID)
     ) {
-      return res.status(400).send({ ERR: "Invalid or missing clinicID or email" });
+      return res
+        .status(400)
+        .send({ ERR: "Invalid or missing clinicID or email" });
     }
     try {
-      const response = await pharmacyModule.removeStudentFromQueue(clinicID, email);
+      const response = await pharmacyModule.removeStudentFromQueue(
+        clinicID,
+        email
+      );
       return res.status(response.responseStatus).send(response.responseBody);
     } catch (err) {
       return res.status(500).send({ ERR: "Internal Server Error" });
