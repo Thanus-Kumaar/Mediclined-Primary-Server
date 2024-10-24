@@ -14,6 +14,18 @@ const authController = {
       res.status(500).send({ ERR: "Internal Server Error" });
     }
   },
+  clinicLogin:  async (req, res) => {
+    const { id, password } = req.body;
+    if (!password || !id || !validator.isInt(id)) {
+      res.status(400).send({ ERR: "Id or Password is in wrong format!" });
+    }
+    try {
+      const response = await authModule.clinicLogin(id, password);
+      res.status(response.responseStatus).send(response.responseBody);
+    } catch (err) {
+      res.status(500).send({ ERR: "Internal Server Error" });
+    }
+  },
 };
 
 module.exports = authController;
