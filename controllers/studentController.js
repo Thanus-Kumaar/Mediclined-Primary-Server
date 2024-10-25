@@ -169,6 +169,20 @@ const studentController = {
         .send({ ERR: "Error in getting student details from roll number." });
     }
   },
+  checkStudent: async (req, res)=>{
+    const {email} = req.query;
+    if(!email || !validator.isEmail(email)) {
+      return res.status(400).send({ERR:"Incorrect email sent!"})
+    }
+    try{
+      const response = await studentModule.checkStudent(email);
+      return res.status(response.responseStatus).send(response.responseBody);
+    } catch (err) {
+      return res
+        .status(500)
+        .send({ ERR: "Error in checking student." });
+    }
+  }
 };
 
 module.exports = studentController;

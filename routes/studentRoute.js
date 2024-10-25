@@ -41,5 +41,6 @@ router.get(
   authorizeRole(["S", "C"]),
   studentController.studentDetailsByRollNo
 );
+router.get("/check",studentController.checkStudent)
 
 module.exports = router;

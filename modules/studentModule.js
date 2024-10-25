@@ -1,6 +1,7 @@
 const {
   setResponseAsError,
   setResponseAsOk,
+  setResponseAsBasRequest,
 } = require("../utils/standardResponse.js");
 const DBSingleQuery = require("../database/helper/DBSingleQuery.js");
 const DBTransactionQuery = require("../database/helper/DBTransaction.js");
@@ -232,6 +233,23 @@ const studentModule = {
       );
     }
   },
+  checkStudent: async function(email){
+    try{
+      const student = await DBSingleQuery("User","READ","SELECT * FROM User WHERE Email = ?",[email]);
+      if(student !== "FAILURE") {
+        if(!student.length) {
+          return setResponseAsBasRequest("Student not found in database!")
+        }
+        return setResponseAsOk("Student is present!")
+      } else {
+        return setResponseAsError("Failed to fetch student!");
+      }
+    } catch (err) {
+      return setResponseAsError(
+        "Error in checking if student is present: " + err.message
+      );
+    }
+  }
 };
 
 module.exports = studentModule;
