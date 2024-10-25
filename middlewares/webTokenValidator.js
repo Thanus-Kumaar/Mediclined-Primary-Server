@@ -1,4 +1,6 @@
 const jwt = require('jsonwebtoken');
+require("dotenv").config();
+
 const JWT_SECRET = process.env.SEC_KEY;
 
 exports.authorizeRole = (roles) => {

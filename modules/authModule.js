@@ -5,6 +5,8 @@ const {
 } = require("../utils/standardResponse.js");
 const DBSingleQuery = require("../database/helper/DBSingleQuery.js");
 
+require("dotenv").config();
+
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt")
 

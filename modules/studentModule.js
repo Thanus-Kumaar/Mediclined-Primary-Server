@@ -6,10 +6,26 @@ const DBSingleQuery = require("../database/helper/DBSingleQuery.js");
 const DBTransactionQuery = require("../database/helper/DBTransaction.js");
 
 const bcrypt = require("bcrypt");
+const crypto = require("crypto");
+const logger = require("../utils/logger.js");
 
 const studentModule = {
   addStudents: async function (emails, clinicID) {
     try {
+      const cliFound = await DBSingleQuery(
+        "Clinic",
+        "READ",
+        "SELECT Clinic_ID FROM Clinic WHERE Clinic_ID = ?",
+        [clinicID]
+      );
+      if (cliFound !== "FAILURE") {
+        if (cliFound.length == 0) {
+          return setResponseAsOk("Clinic not found!");
+        }
+      } else {
+        return setResponseAsError("Internal Server Error!");
+      }
+      let queries = [];
       for (const email of emails) {
         // Generate random password and hash it
         const password = crypto.randomBytes(8).toString("hex");
@@ -38,6 +54,7 @@ const studentModule = {
         return setResponseAsError("Failed to add students to the database!");
       }
     } catch (error) {
+      logger.error({ message: "Internal server error", error: error });
       return setResponseAsError("Error in addStudents: " + error.message);
     }
   },
@@ -197,22 +214,24 @@ const studentModule = {
     }
   },
   studentDetailsByRollNo: async function (rollNo) {
-    try{
+    try {
       const details = await DBSingleQuery(
         "Patient",
         "READ",
         "SELECT * FROM Patient WHERE Roll_number = ?",
         [rollNo]
-      )
+      );
       if (details != "FAILURE") {
         return setResponseAsOk(details);
       } else {
         return setResponseAsError("Failed to fetch student!");
       }
     } catch (err) {
-      return setResponseAsError("Error in studentDetailsByRollNo: " + err.message);
+      return setResponseAsError(
+        "Error in studentDetailsByRollNo: " + err.message
+      );
     }
-  }
+  },
 };
 
 module.exports = studentModule;

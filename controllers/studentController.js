@@ -5,9 +5,9 @@ const studentController = {
   // Add students for a particular clinic (Admin-only)
   addStudents: async (req, res) => {
     const { emails, clinicID } = req.body;
-    if (!emails || emails.length === 0) {
+    if (!emails || emails.length === 0 || !clinicID || !validator.isInt(clinicID)) {
       return res.status(400).json({
-        message: "Emails cannot be empty!",
+        message: "Credentials cannot be empty!",
       });
     }
     const invalidEmails = emails.filter((email) => !validator.isEmail(email));

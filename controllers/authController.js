@@ -25,7 +25,7 @@ const authController = {
         .send({ ERR: "Id or Password is in wrong format!" });
     }
     try {
-      const response = await authModule.clinicLogin(id, password);
+      const response = await authModule.clinicLogin(parseInt(id), password);
       return res.status(response.responseStatus).send(response.responseBody);
     } catch (err) {
       return res.status(500).send({ ERR: "Internal Server Error" });
