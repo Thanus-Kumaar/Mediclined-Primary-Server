@@ -66,7 +66,11 @@ const studentModule = {
       }
 
       // Execute the transaction to insert all students
-      const transactionResult = await DBTransactionQuery(queries);
+      const transactionResult = await DBTransactionQuery(
+        ["User", "Patient"],
+        "WRITE",
+        queries
+      );
 
       if (transactionResult !== "FAILURE") {
         return setResponseAsOk("Students added to database successfully!");

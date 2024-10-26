@@ -5,6 +5,7 @@ const executeTransactionQuery = async (tables, lockType, queries = []) => {
   let connection;
   try {
     connection = await DBPool.getConnection();
+    await connection.query("SET autocommit = 0");
     await connection.beginTransaction();
 
     if (tables != null && lockType != null) {
@@ -38,13 +39,17 @@ const executeTransactionQuery = async (tables, lockType, queries = []) => {
     return results.length ? results : "SUCCESS";
   } catch (err) {
     await connection.rollback();
+    await connection.query("UNLOCK TABLES");
     logger.error({
       message: "Error occurred during the transaction!",
       error: err,
     });
     return "FAILURE";
   } finally {
-    connection.release();
+    if (connection) {
+      await connection.query("SET autocommit = 1");
+      connection.release();
+    }
   }
 };
 
