@@ -1,11 +1,12 @@
 const {
   setResponseAsError,
   setResponseAsOk,
+  setResponseAsBasRequest,
 } = require("../utils/standardResponse.js");
 const DBSingleQuery = require("../database/helper/DBSingleQuery.js");
 const DBTransactionQuery = require("../database/helper/DBTransaction.js");
 
-const bcrypt = require("bcrypt")
+const bcrypt = require("bcrypt");
 
 const doctorModule = {
   getDoctorDetails: async function (email) {
@@ -27,11 +28,19 @@ const doctorModule = {
   },
   deleteDoctor: async function (email) {
     try {
-      const deleted = await DBSingleQuery(
-        "Doctor",
+      const deleted = await DBTransactionQuery(
+        ["Doctor", "User"],
         "WRITE",
-        "DELETE FROM Doctor WHERE Email = ?",
-        [email]
+        [
+          {
+            queryString: "DELETE FROM Doctor WHERE Email = ?",
+            queryParams: [email],
+          },
+          {
+            queryString: "DELETE FROM User WHERE Email = ?",
+            queryParams: [email],
+          },
+        ],
       );
       if (deleted != "FAILURE") {
         return setResponseAsOk("Doctor deleted successfully!");
@@ -54,6 +63,17 @@ const doctorModule = {
   ) {
     try {
       const hashedPassword = await bcrypt.hash(password, 10);
+      const clinic = await DBSingleQuery(
+        "Clinic",
+        "READ",
+        "SELECT Clinic_ID FROM Clinic WHERE CLinic_ID = ?",
+        [clinicID]
+      );
+      if (clinic != "FAILURE") {
+        if (!clinic.length) {
+          return setResponseAsBasRequest("Clinic not found!");
+        }
+      }
       const transaction = await DBTransactionQuery(
         ["User", "Doctor"],
         "WRITE",
@@ -100,8 +120,8 @@ const doctorModule = {
       const doctors = await DBSingleQuery(
         "Doctor",
         "READ",
-        "SELECT * FROM Doctor WHERE Clinic_ID = ?",
-        [clinicID]
+        "SELECT * FROM Doctor",
+        []
       );
       if (doctors != "FAILURE") {
         return setResponseAsOk(doctors);

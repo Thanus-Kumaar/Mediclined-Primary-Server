@@ -80,12 +80,8 @@ const doctorController = {
     }
   },
   getAllDoctors: async (req, res) => {
-    const { clinicID } = req.query;
-    if (!clinicID) {
-      return res.status(400).send({ ERR: "Clinic ID is required!" });
-    }
     try {
-      const response = await doctorModule.getAllDoctors(clinicID);
+      const response = await doctorModule.getAllDoctors();
       return res.status(response.responseStatus).send(response.responseBody);
     } catch (err) {
       return res.status(500).send({ ERR: "Error retrieving doctors!" });

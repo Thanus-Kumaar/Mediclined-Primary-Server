@@ -10,7 +10,7 @@ function setResponseAsError(err) {
 
 function setResponseAsBasRequest(message){
   response.responseStatus = 400;
-  response.responseBody = { BAD_REQUEST: message };
+  response.responseBody = { ERR: message };
   return response;
 }
 

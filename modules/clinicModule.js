@@ -12,7 +12,7 @@ const clinicModule = {
       const clinics = await DBSingleQuery(
         "Clinic",
         "READ",
-        "SELECT Clinic_ID, University_Name FROM Clinic"
+        "SELECT Clinic_ID, University_Name, Password FROM Clinic"
       );
       if (clinics != "FAILURE") {
         return setResponseAsOk(clinics);
@@ -42,7 +42,6 @@ const clinicModule = {
   },
   createClinic: async function (
     university_name,
-    doctor_availability,
     password
   ) {
     try {
@@ -50,8 +49,8 @@ const clinicModule = {
       const created = await DBSingleQuery(
         "Clinic",
         "WRITE",
-        "INSERT INTO Clinic (University_Name, Doctor_Availability, Password) VALUES (?,?,?)",
-        [university_name, doctor_availability, hashedPassword]
+        "INSERT INTO Clinic (University_Name, Password) VALUES (?,?)",
+        [university_name, hashedPassword]
       );
       if (created != "FAILURE") {
         return setResponseAsOk("Clinic created successfully!");

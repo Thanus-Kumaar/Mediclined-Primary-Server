@@ -23,11 +23,10 @@ const clinicController = {
     }
   },
   createClinic: async (req, res) => {
-    const { university_name, doctor_availability, password } = req.body;
+    const { university_name, password } = req.body;
     if (
       !university_name ||
-      !password ||
-      typeof doctor_availability !== "boolean"
+      !password
     ) {
       return res.status(400).send({ ERR: "Missing or invalid clinic details" });
     }
@@ -35,7 +34,6 @@ const clinicController = {
     try {
       const response = await clinicModule.createClinic(
         university_name,
-        doctor_availability,
         password
       );
       return res.status(response.responseStatus).send(response.responseBody);
