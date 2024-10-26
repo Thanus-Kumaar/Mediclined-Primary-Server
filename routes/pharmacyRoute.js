@@ -47,9 +47,9 @@ router.delete(
   pharmacyController.deleteProduct
 );
 router
-  .route("/queue", authorizeRole(["C"]))
-  .get(authorizeRole(["D"]), pharmacyController.getStudentsQueue)
-  .post(pharmacyController.addStudentToQueue)
-  .delete(authorizeRole(["D"]), pharmacyController.removeStudentFromQueue);
+  .route("/queue")
+  .get(authorizeRole(["D","C"]), pharmacyController.getStudentsQueue)
+  .post(authorizeRole(["C"]), pharmacyController.addStudentToQueue)
+  .delete(authorizeRole(["D","C"]), pharmacyController.removeStudentFromQueue);
 
 module.exports = router;
