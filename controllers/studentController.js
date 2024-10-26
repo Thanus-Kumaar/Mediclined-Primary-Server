@@ -5,7 +5,7 @@ const studentController = {
   // Add students for a particular clinic (Admin-only)
   addStudents: async (req, res) => {
     const { emails, clinicID } = req.body;
-    if (!emails || emails.length === 0 || !clinicID || !validator.isInt(clinicID)) {
+    if (!emails || emails.length === 0 || !clinicID) {
       return res.status(400).json({
         message: "Credentials cannot be empty!",
       });

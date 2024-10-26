@@ -6,9 +6,24 @@ const {
 const DBSingleQuery = require("../database/helper/DBSingleQuery.js");
 const DBTransactionQuery = require("../database/helper/DBTransaction.js");
 
+const sendMail = require("../utils/email/emailGenerator.js");
+
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const logger = require("../utils/logger.js");
+
+const characters =
+  "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+const passwordLength = 8;
+
+function generatePassword() {
+  let password = "";
+  for (let i = 0; i < passwordLength; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    password += characters[randomIndex];
+  }
+  return password;
+}
 
 const studentModule = {
   addStudents: async function (emails, clinicID) {
@@ -29,10 +44,14 @@ const studentModule = {
       let queries = [];
       for (const email of emails) {
         // Generate random password and hash it
-        const password = crypto.randomBytes(8).toString("hex");
+        const password = generatePassword();
         const hashedPassword = await bcrypt.hash(password, 10);
 
         // send mail and check if the mail has been sent, else revert.
+
+        const response = await sendMail(email, "Welcome", {
+          password: password,
+        });
 
         // Prepare the queries to insert the student into User and Patient tables
         queries.push({
@@ -99,6 +118,9 @@ const studentModule = {
     try {
       const hashedPassword = await bcrypt.hash(newPassword, 10);
       // send mail containing the updated password
+      const response = await sendMail(email, "resetPassword", {
+        password: newPassword,
+      });
       const updatePassword = await DBSingleQuery(
         "User",
         "WRITE",
@@ -119,9 +141,12 @@ const studentModule = {
   resetStudentPassword: async function (email) {
     try {
       // change this to generate a random alphanumeric password
-      const newPassword = Math.random().toString(36).slice(-8);
+      const newPassword = generatePassword();
       const hashedNewPassword = bcrypt.hashSync(newPassword, 10);
       // send mail containing new password
+      const response = await sendMail(email, "resetPassword", {
+        password: newPassword,
+      });
       const updatePassword = await DBSingleQuery(
         "User",
         "WRITE",
@@ -233,14 +258,19 @@ const studentModule = {
       );
     }
   },
-  checkStudent: async function(email){
-    try{
-      const student = await DBSingleQuery("User","READ","SELECT * FROM User WHERE Email = ?",[email]);
-      if(student !== "FAILURE") {
-        if(!student.length) {
-          return setResponseAsBasRequest("Student not found in database!")
+  checkStudent: async function (email) {
+    try {
+      const student = await DBSingleQuery(
+        "User",
+        "READ",
+        "SELECT * FROM User WHERE Email = ?",
+        [email]
+      );
+      if (student !== "FAILURE") {
+        if (!student.length) {
+          return setResponseAsBasRequest("Student not found in database!");
         }
-        return setResponseAsOk("Student is present!")
+        return setResponseAsOk("Student is present!");
       } else {
         return setResponseAsError("Failed to fetch student!");
       }
@@ -249,7 +279,7 @@ const studentModule = {
         "Error in checking if student is present: " + err.message
       );
     }
-  }
+  },
 };
 
 module.exports = studentModule;

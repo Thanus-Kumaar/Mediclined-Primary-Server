@@ -1,11 +1,13 @@
 const {
   setResponseAsError,
   setResponseAsOk,
+  setResponseAsBasRequest,
 } = require("../utils/standardResponse.js");
 const DBSingleQuery = require("../database/helper/DBSingleQuery.js");
 const DBTransactionQuery = require("../database/helper/DBTransaction.js");
 
 const bcrypt = require("bcrypt");
+const sendMail = require("../utils/email/emailGenerator.js");
 const saltRounds = 10;
 
 const billModule = {
@@ -161,7 +163,20 @@ const billModule = {
   sendOTP: async function (billID) {
     try {
       const otp = Math.floor(1000 + Math.random() * 9000).toString();
+      const res = await DBSingleQuery(
+        "Bill",
+        "READ",
+        "SELECT Patient_Email FROM Bill WHERE Bill_ID = ?",
+        [billID]
+      );
+      if (res == "FAILURE") {
+        return setResponseAsError("Failed to generate OTP!");
+      }
+      if (!res.length) {
+        return setResponseAsBasRequest("No user found for given bill.");
+      }
       // send mail, if mail is not being sent, fail the process and return, else go for inserting it into the table.
+      await sendMail(res[0].Patient_Email, "OTP", { otp: otp });
       const hashedOTP = await bcrypt.hash(otp, saltRounds);
       const updated = await DBSingleQuery(
         "`Order`",
