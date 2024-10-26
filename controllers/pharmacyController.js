@@ -7,7 +7,7 @@ const pharmacyController = {
     const { clinicID } = req.query;
 
     // Validate clinicID
-    if (!clinicID || !validator.isInt(clinicID)) {
+    if (!clinicID) {
       return res.status(400).send({ ERR: "Invalid or missing clinicID" });
     }
 
@@ -89,7 +89,6 @@ const pharmacyController = {
       !clinicID ||
       !stock ||
       !validator.isInt(medicineID.toString()) ||
-      !validator.isInt(clinicID.toString()) ||
       !validator.isInt(stock.toString())
     ) {
       return res.status(400).send({ ERR: "Invalid or missing fields" });
@@ -149,7 +148,6 @@ const pharmacyController = {
       !productID ||
       !validator.isInt(productID.toString()) ||
       !clinicID ||
-      !validator.isInt(clinicID.toString()) ||
       !validator.isInt(stock.toString())
     ) {
       return res
@@ -178,12 +176,7 @@ const pharmacyController = {
     const { productID, clinicID } = req.params;
 
     // Validate inputs
-    if (
-      !productID ||
-      !clinicID ||
-      !validator.isInt(productID.toString()) ||
-      !validator.isInt(clinicID.toString())
-    ) {
+    if (!productID || !clinicID || !validator.isInt(productID.toString())) {
       return res
         .status(400)
         .send({ ERR: "Invalid or missing productID or clinicID" });
@@ -227,7 +220,7 @@ const pharmacyController = {
   },
   getStudentsQueue: async (req, res) => {
     const { clinicID } = req.query;
-    if (!clinicID || !validator.isInt(clinicID)) {
+    if (!clinicID) {
       return res.status(400).send({ ERR: "Invalid or missing clinicID" });
     }
     try {
@@ -239,14 +232,7 @@ const pharmacyController = {
   },
   addStudentToQueue: async (req, res) => {
     const { clinicID, email, queueNo } = req.body;
-    if (
-      !clinicID ||
-      !email ||
-      !queueNo ||
-      !validator.isInt(clinicID) ||
-      !validator.isInt(queueNo) ||
-      !validator.isEmail(email)
-    ) {
+    if (!clinicID || !email || !queueNo || !validator.isEmail(email)) {
       return res.status(400).send({ ERR: "Invalid or missing credentials" });
     }
     try {
@@ -262,12 +248,7 @@ const pharmacyController = {
   },
   removeStudentFromQueue: async (req, res) => {
     const { clinicID, email } = req.query;
-    if (
-      !clinicID ||
-      !email ||
-      !validator.isEmail(email) ||
-      !validator.isInt(clinicID)
-    ) {
+    if (!clinicID || !email || !validator.isEmail(email)) {
       return res
         .status(400)
         .send({ ERR: "Invalid or missing clinicID or email" });
