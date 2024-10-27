@@ -28,8 +28,16 @@ const studentController = {
   deleteStudents: async (req, res) => {
     const { emails } = req.body;
 
-    if (!emails || !Array.isArray(emails) || !emails.every(validator.isEmail)) {
-      return res.status(400).send({ ERR: "Invalid email list" });
+    if (!emails || emails.length === 0) {
+      return res.status(400).json({
+        message: "Credentials cannot be empty!",
+      });
+    }
+    const invalidEmails = emails.filter((email) => !validator.isEmail(email));
+    if (invalidEmails.length > 0) {
+      return res.status(400).json({
+        message: `Invalid email(s): ${invalidEmails.join(", ")}`,
+      });
     }
 
     try {
@@ -59,12 +67,13 @@ const studentController = {
     }
 
     try {
-      const response = await userModule.updateStudentPassword(
+      const response = await studentModule.updateStudentPassword(
         email,
         newPassword
       );
       return res.status(response.responseStatus).send(response.responseBody);
     } catch (err) {
+      console.log(err)
       return res.status(500).send({ ERR: "Error updating password" });
     }
   },
@@ -78,7 +87,7 @@ const studentController = {
     }
 
     try {
-      const response = await userModule.resetStudentPassword(email);
+      const response = await studentModule.resetStudentPassword(email);
       return res.status(response.responseStatus).send(response.responseBody);
     } catch (err) {
       return res.status(500).send({ ERR: "Error resetting password" });

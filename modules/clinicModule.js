@@ -63,11 +63,12 @@ const clinicModule = {
   },
   updateClinic: async function (clinicID, university_name, password) {
     try {
+      const hashedPassword = await bcrypt.hash(password, 10);
       const updated = await DBSingleQuery(
         "Clinic",
         "WRITE",
         "UPDATE Clinic SET University_Name = ?, Password = ? WHERE Clinic_ID = ?",
-        [university_name, password, clinicID]
+        [university_name, hashedPassword, clinicID]
       );
       if (updated != "FAILURE") {
         return setResponseAsOk("Clinic updated successfully!");

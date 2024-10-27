@@ -52,6 +52,7 @@ const authModule = {
                 process.env.SEC_KEY,
                 { expiresIn: "1h" } // Token expires in 1 hour
               );
+              return setResponseAsOk({ token: token, role: user[0].Role, ClinicID: student[0].Clinic_ID });
             } else {
               return setResponseAsError("Internal server error");
             }
@@ -72,6 +73,7 @@ const authModule = {
                 process.env.SEC_KEY,
                 { expiresIn: "1h" } // Token expires in 1 hour
               );
+              return setResponseAsOk({ token: token, role: user[0].Role, ClinicID: doc[0].Clinic_ID });
             } else {
               return setResponseAsError("Internal server error");
             }
@@ -81,8 +83,8 @@ const authModule = {
               process.env.SEC_KEY,
               { expiresIn: "1h" } // Token expires in 1 hour
             );
+            return setResponseAsOk({ token: token, role: user[0].Role });
           }
-          return setResponseAsOk({ token: token, role: user[0].Role });
         }
       }
     } catch (err) {
