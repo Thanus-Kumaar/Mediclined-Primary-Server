@@ -17,6 +17,8 @@ CREATE TABLE User (
 );
 
 INSERT INTO User VALUES("thanuskumaara@gmail.com","$2b$10$Nr7zW.NA2qCQEEBZ19vAzOf6146iPUZG9STwp9aUSLkpJs1fHMumi","A");
+INSERT INTO User VALUES("doc@gmail.com","$2b$10$Nr7zW.NA2qCQEEBZ19vAzOf6146iPUZG9STwp9aUSLkpJs1fHMumi","D");
+INSERT INTO User VALUES("aakash@gmail.com","$2b$10$Nr7zW.NA2qCQEEBZ19vAzOf6146iPUZG9STwp9aUSLkpJs1fHMumi","S");
 
 CREATE TABLE Clinic (
     University_Name VARCHAR(255) UNIQUE,
@@ -24,6 +26,8 @@ CREATE TABLE Clinic (
     Doctor_Availability BOOLEAN,
     Password VARCHAR(255)
 );
+
+INSERT INTO Clinic (University_Name, Password) VALUES("Amrita","$2b$10$Nr7zW.NA2qCQEEBZ19vAzOf6146iPUZG9STwp9aUSLkpJs1fHMumi");
 
 CREATE TABLE Doctor (
     Name VARCHAR(255),
@@ -35,6 +39,8 @@ CREATE TABLE Doctor (
     FOREIGN KEY (Email) REFERENCES User(Email) ON DELETE CASCADE,
     FOREIGN KEY (Clinic_ID) REFERENCES Clinic(Clinic_ID) ON DELETE CASCADE
 );
+
+INSERT INTO Doctor VALUES("Tharun","doc@gmail.com","Ortho","MBBS",28,1);
 
 CREATE TABLE Patient (
     Email VARCHAR(255) PRIMARY KEY,
@@ -48,6 +54,8 @@ CREATE TABLE Patient (
     FOREIGN KEY (Email) REFERENCES User(Email) ON DELETE CASCADE,
     FOREIGN KEY (Clinic_ID) REFERENCES Clinic(Clinic_ID) ON DELETE SET NULL
 );
+
+INSERT INTO Patient (Email, Clinic_ID) VALUES("aakash@gmail.com", 1);
 
 CREATE TABLE Medicine (
     Medicine_ID INTEGER PRIMARY KEY AUTO_INCREMENT,

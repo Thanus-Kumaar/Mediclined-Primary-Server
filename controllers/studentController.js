@@ -112,7 +112,7 @@ const studentController = {
 
   // Edit student details
   editStudentDetails: async (req, res) => {
-    const { email, name, age, gender, bloodGroup } = req.body;
+    const { email, name, age, rollNo, gender, bloodGroup } = req.body;
 
     if (!validator.isEmail(email)) {
       return res.status(400).send({ ERR: "Invalid email" });
@@ -123,6 +123,7 @@ const studentController = {
         email,
         name,
         age,
+        rollNo,
         gender,
         bloodGroup
       );

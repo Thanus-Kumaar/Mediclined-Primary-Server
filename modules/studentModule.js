@@ -189,13 +189,13 @@ const studentModule = {
       return setResponseAsError("Error in studentDetails: " + err.message);
     }
   },
-  editStudentDetails: async function (email, name, age, gender, bloodGroup) {
+  editStudentDetails: async function (email, name, age, rollNo, gender, bloodGroup) {
     try {
       const updateDetails = await DBSingleQuery(
         "Patient",
         "WRITE",
-        `UPDATE Patient SET Name = ?, Age = ?, Gender = ?, Blood_Group = ? WHERE Email = ?`,
-        [name, age, gender, bloodGroup, email]
+        `UPDATE Patient SET Name = ?, Age = ?, Roll_number = ? , Gender = ?, Blood_Group = ?WHERE Email = ?`,
+        [name, age, rollNo, gender, bloodGroup, email]
       );
 
       if (updateDetails != "FAILURE") {
